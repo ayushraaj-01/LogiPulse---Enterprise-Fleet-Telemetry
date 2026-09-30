@@ -1,0 +1,311 @@
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* LogiPulse Theme: Inside Website Warm Ivory & Vibrant Golden Yellow (#FBBC04 / #F59E0B) */
+    --background: 48 30% 98%;          /* #FAF8F0 luxury warm ivory/cream canvas */
+    --foreground: 222 47% 11%;          /* #0F172A deep dark navy slate text for contrast */
+    
+    --card: 0 0% 100%;                  /* #FFFFFF brilliant crisp white cards */
+    --card-foreground: 222 47% 11%;     /* #0F172A */
+    
+    --popover: 0 0% 100%;               /* #FFFFFF */
+    --popover-foreground: 222 47% 11%;
+    
+    /* LogiPulse Signature Inside Yellow Primary (#FBBC04 / #F59E0B) */
+    --primary: 43 96% 53%;             /* #FBBC04 vibrant electric fleet yellow */
+    --primary-foreground: 222 47% 11%;  /* #0F172A bold dark text on yellow */
+    
+    --secondary: 48 100% 95%;          /* #FEF9E7 soft golden yellow tint */
+    --secondary-foreground: 40 95% 38%; /* #B45309 deep rich amber */
+    
+    --muted: 48 20% 94%;               /* #F4F1E6 soft warm slate */
+    --muted-foreground: 215 16% 46%;    /* #64748B clean balanced slate */
+    
+    --accent: 43 96% 53%;              /* #FBBC04 vibrant golden yellow */
+    --accent-foreground: 222 47% 11%;   /* #0F172A */
+    
+    --destructive: 0 84% 60%;           /* #EF4444 */
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 142 72% 38%;             /* #16A34A */
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;              /* #F59E0B */
+    --warning-foreground: 222 47% 11%;
+    
+    --info: 215 84% 55%;                /* #2F80ED */
+    --info-foreground: 0 0% 100%;
+    
+    --border: 45 20% 88%;              /* #E6E2D3 sleek crisp warm border */
+    --input: 45 20% 88%;
+    --ring: 43 96% 53%;                /* #FBBC04 */
+  }
+
+  .dark {
+    /* LogiPulse Dark Mode: Midnight Deep Sky Navy Canvas & Glowing Electric Yellow */
+    --background: 222 47% 7%;           /* #090E17 midnight nocturnal canvas */
+    --foreground: 210 40% 98%;          /* #F8FAFC clean white text */
+    
+    --card: 222 47% 10%;                /* #0E1626 dark navy card */
+    --card-foreground: 210 40% 98%;     /* #F8FAFC */
+    
+    --popover: 222 47% 10%;             /* #0E1626 */
+    --popover-foreground: 210 40% 98%;
+    
+    /* LogiPulse Signature Glowing Electric Yellow Primary */
+    --primary: 48 96% 53%;             /* #FACC15 luminous neon yellow */
+    --primary-foreground: 222 47% 11%;  /* #0F172A dark contrast */
+    
+    --secondary: 45 30% 16%;           /* #2A2415 warm dark amber slate */
+    --secondary-foreground: 48 96% 53%;/* #FACC15 */
+    
+    --muted: 217 33% 13%;               /* #141D2D */
+    --muted-foreground: 215 20% 65%;    /* #94A3B8 */
+    
+    --accent: 48 96% 53%;              /* #FACC15 glowing yellow */
+    --accent-foreground: 222 47% 11%;
+    
+    --destructive: 4 82% 56%;           /* #EA4335 */
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 142 70% 45%;             /* #22C55E */
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 48 96% 53%;              /* #FACC15 */
+    --warning-foreground: 222 47% 11%;
+    
+    --info: 215 84% 55%;                /* #2F80ED */
+    --info-foreground: 0 0% 100%;
+    
+    --border: 217 33% 18%;              /* #1E293B */
+    --input: 217 33% 18%;
+    --ring: 48 96% 53%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased font-sans transition-colors duration-200;
+    font-feature-settings: "rlig" 1, "calt" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.012em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
+    letter-spacing: -0.028em;
+  }
+
+  .font-mono {
+    font-feature-settings: "zero" 1, "tnum" 1;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Glassmorphism Classes */
+.glass-card {
+  background: hsl(var(--card) / 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsl(var(--border) / 0.8);
+}
+
+.glass-nav {
+  background: hsl(var(--background) / 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid hsl(var(--border) / 0.8);
+}
+
+/* Micro-Interaction & Hover Animation Utilities */
+.hover-lift {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease;
+  will-change: transform, box-shadow;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -12px rgba(245, 158, 11, 0.25), 0 4px 14px -3px rgba(0, 0, 0, 0.08);
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+.hover-scale {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.025);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 25px -4px hsl(var(--primary) / 0.35);
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+/* Shimmer Light Sweep on Primary Buttons */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  left: -70%;
+  width: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  transition: transform 0.75s ease;
+  pointer-events: none;
+}
+
+.btn-shimmer:hover::after {
+  transform: rotate(25deg) translate(340%, 0);
+}
+
+/* Custom Ultra-Sleek Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.25);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.75);
+}
+
+/* Scroll Fade In Animation */
+@keyframes scrollReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-reveal {
+  animation: scrollReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Technical Matrix Grid (DevFest Sky Blue & White Aesthetic for Login Hero) */
+.bg-tech-grid {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(245, 158, 11, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 158, 11, 0.08) 1px, transparent 1px);
+}
+
+.bg-tech-grid-blue {
+  background-color: #2F80ED;
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+}
+
+.dark .bg-tech-grid {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.bg-tech-dots {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(47, 128, 237, 0.14) 1.25px, transparent 1.25px);
+}
+
+.dark .bg-tech-dots {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(59, 130, 246, 0.14) 1.25px, transparent 1.25px);
+}
+
+.mask-radial-faded {
+  mask-image: radial-gradient(circle at center, black 40%, transparent 92%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 92%);
+}
+
+/* Golden Yellow Pill CTA Button for Inside Website */
+.btn-devfest {
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBC04 50%, #FBBF24 100%);
+  color: #0F172A;
+  font-weight: 800;
+  border-radius: 9999px;
+  box-shadow: 0 4px 18px -2px rgba(245, 158, 11, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-devfest:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBC04 100%);
+  box-shadow: 0 8px 25px -2px rgba(245, 158, 11, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.btn-devfest:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+}
+
+/* Dedicated Sky Blue Pill Button for Login Page */
+.btn-blue {
+  background: linear-gradient(135deg, #1D70EC 0%, #2F80ED 50%, #3B82F6 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  border-radius: 9999px;
+  box-shadow: 0 4px 18px -2px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-blue:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #1A60CC 0%, #2563EB 50%, #2F80ED 100%);
+  box-shadow: 0 8px 25px -2px rgba(37, 99, 235, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.btn-blue:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}

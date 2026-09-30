@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Build Outputs & Bundles
+.next/
+out/
+build/
+dist/
+client/dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Large Native Node Binaries (Prevents GitHub 100MB rejection)
+*.node
+*.dll
+*.exe
+*.so
+*.dylib
+
+# Environment Variables & API Secrets
+.env
+.env*.local
+.env.production
+.env.development
+*.env
+server/.env
+
+# Debug Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Caches & Diagnostic Tools
+.cache/
+.turbo/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+coverage/
+.nyc_output/
+
+# Operating System & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.agents/
+.gemini/

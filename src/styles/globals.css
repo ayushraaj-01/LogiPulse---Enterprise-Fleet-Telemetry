@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;          /* #F8FAFC - Clean Slate */
+    --foreground: 222 47% 11%;          /* #0F172A - Deep Charcoal */
+    --card: 0 0% 100%;                  /* #FFFFFF - Pure White */
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Primary Brand (Electric Cobalt) */
+    --primary: 221 83% 53%;             /* #2563EB */
+    --primary-foreground: 210 40% 98%;
+
+    /* Secondary & Muted */
+    --secondary: 210 40% 96%;           /* #F1F5F9 */
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;    /* #64748B */
+
+    /* Accent (Active Cyan Glow) */
+    --accent: 199 89% 48%;              /* #0EA5E9 */
+    --accent-foreground: 222 47% 11%;
+
+    /* Semantic Feedback */
+    --success: 142 71% 45%;             /* #16A34A - Moving / Delivered */
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;              /* #F59E0B - Idling / Caution */
+    --warning-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;           /* #EF4444 - Delayed / Stopped / Alert */
+    --destructive-foreground: 0 0% 100%;
+    --info: 217 91% 60%;                /* #3B82F6 */
+    --info-foreground: 0 0% 100%;
+
+    /* Borders & Focus */
+    --border: 214 32% 91%;              /* #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.5rem;                   /* 8px */
+  }
+
+  .dark {
+    --background: 224 71% 4%;           /* #020817 - Deepest Space Navy */
+    --foreground: 210 40% 98%;          /* #F8FAFC */
+    --card: 222 47% 8%;                 /* #0B132B */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;             /* #3B82F6 */
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217 33% 17%;           /* #1E293B */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;    /* #94A3B8 */
+
+    --accent: 199 89% 48%;              /* #0EA5E9 */
+    --accent-foreground: 210 40% 98%;
+
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --destructive: 0 84% 60%;
+    --info: 217 91% 60%;
+
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 217 91% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    font-feature-settings: "rlig" 1, "calt" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: hsl(var(--card) / 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 0.7);
+}
+
+.glass-dropdown {
+  background: hsl(var(--popover) / 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsl(var(--border) / 0.8);
+}
