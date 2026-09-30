@@ -63,42 +63,42 @@ export const LogiPulseIcon = ({ className = "h-8 w-8", onBlue = false }) => {
       className={className}
       aria-hidden="true"
     >
-      {/* Clean Sky Blue Rounded Squircle Matching Favicon */}
-      <rect width="40" height="40" rx="10" fill="#2F80ED" />
+      {/* Golden Yellow Rounded Squircle Matching Favicon Exactly */}
+      <rect width="40" height="40" rx="10" fill="#FFB800" />
 
-      {/* Delivery Vehicle Body */}
+      {/* Delivery Vehicle Body in Dark Navy */}
       <path
         d="M8.5 13C8.5 12.17 9.17 11.5 10 11.5H23V25.5H10C9.17 25.5 8.5 24.83 8.5 24V13Z"
-        fill="#0F172A"
+        fill="#111827"
       />
       <path
         d="M23 14.5H28.2C28.8 14.5 29.35 14.85 29.6 15.4L32.2 20.8C32.4 21.2 32.5 21.65 32.5 22.1V24.5C32.5 25.05 32.05 25.5 31.5 25.5H23V14.5Z"
-        fill="#0F172A"
+        fill="#111827"
       />
 
-      {/* Windshield */}
+      {/* Windshield in Yellow Cutout */}
       <path
         d="M24.5 16H27.7C28.1 16 28.45 16.2 28.6 16.55L30.5 20.5H24.5V16Z"
-        fill="#FFFFFF"
+        fill="#FFB800"
       />
 
       {/* Express Speed Lightning Bolt on Cargo Container */}
       <path
         d="M17 13.5L12 19H16L14 24L20 18H16L18 13.5H17Z"
-        fill="#FFFFFF"
+        fill="#FFB800"
       />
 
       {/* Heavy-Duty Wheels */}
-      <circle cx="14" cy="26" r="3.2" fill="#0F172A" />
-      <circle cx="14" cy="26" r="1.3" fill="#FFFFFF" />
+      <circle cx="14" cy="26" r="3.2" fill="#111827" />
+      <circle cx="14" cy="26" r="1.3" fill="#FFB800" />
 
-      <circle cx="27.5" cy="26" r="3.2" fill="#0F172A" />
-      <circle cx="27.5" cy="26" r="1.3" fill="#FFFFFF" />
+      <circle cx="27.5" cy="26" r="3.2" fill="#111827" />
+      <circle cx="27.5" cy="26" r="1.3" fill="#FFB800" />
 
       {/* Motion Speed Lines */}
-      <rect x="5.5" y="16.5" width="2" height="1.4" rx="0.7" fill="#0F172A" />
-      <rect x="4" y="19.5" width="3.2" height="1.4" rx="0.7" fill="#0F172A" />
-      <rect x="5.5" y="22.5" width="2" height="1.4" rx="0.7" fill="#0F172A" />
+      <rect x="5.5" y="16.5" width="2" height="1.4" rx="0.7" fill="#111827" />
+      <rect x="4" y="19.5" width="3.2" height="1.4" rx="0.7" fill="#111827" />
+      <rect x="5.5" y="22.5" width="2" height="1.4" rx="0.7" fill="#111827" />
     </svg>
   );
 };
@@ -134,7 +134,11 @@ export const LogiPulseLogo = ({
   return (
     <div className={`flex items-center gap-3 group ${className}`}>
       {/* Brand Icon Matching Favicon Exactly */}
-      <div className="shrink-0 transition-transform duration-200 group-hover:scale-105 shadow-md shadow-sky-500/20 rounded-xl overflow-hidden">
+      <div
+        className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
+          isOnBlue ? "shadow-md shadow-sky-500/20" : "shadow-md shadow-amber-500/25"
+        } rounded-xl overflow-hidden`}
+      >
         <LogiPulseIcon className={config.icon} onBlue={isOnBlue} />
       </div>
 
@@ -147,7 +151,7 @@ export const LogiPulseLogo = ({
               } flex items-center`}
             >
               <span>Logi</span>
-              <span className={isOnBlue ? "text-white" : "text-[#FBBC04]"}>Pulse</span>
+              <span className={isOnBlue ? "text-white" : "text-[#FFB800]"}>Pulse</span>
             </span>
           </div>
           {subtitle && (
