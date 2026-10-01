@@ -54,9 +54,9 @@ export const Overview = () => {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              {t("mernOperational")}
+              <span>Kaggle DataCo Supply Chain Dataset Active</span>
             </span>
-            <span className="text-xs text-muted-foreground font-mono">Pacific NW Depot #1</span>
+            <span className="text-xs text-muted-foreground font-mono">10 Live Corridors</span>
           </div>
           <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-foreground mt-1">
             {t("fleetCommandCenter")}
@@ -68,18 +68,18 @@ export const Overview = () => {
 
         <div className="flex items-center gap-2.5">
           <Link
-            to="/map"
+            to="/dispatch-board"
             className="btn-devfest flex items-center gap-2 px-4 py-2 text-xs shadow-md cursor-pointer"
           >
-            <MapPin className="h-3.5 w-3.5 stroke-[2.5]" />
-            <span>{t("openLiveMap")}</span>
+            <Package className="h-3.5 w-3.5 stroke-[2.5]" />
+            <span>{t("dispatchBoard")}</span>
           </Link>
           <Link
-            to="/dispatch-board"
+            to="/shipments"
             className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-input bg-card hover:bg-muted hover:border-primary/50 hover:scale-[1.02] active:scale-[0.98] text-xs font-semibold transition-all"
           >
-            <Package className="h-3.5 w-3.5" />
-            <span>{t("dispatchBoard")}</span>
+            <Truck className="h-3.5 w-3.5" />
+            <span>{t("navShipments")}</span>
           </Link>
         </div>
       </div>

@@ -37,12 +37,12 @@ const VehicleSchema = new mongoose.Schema(
       default: "ACTIVE",
     },
     currentLocation: {
-      latitude: { type: Number, default: 47.6062 },
-      longitude: { type: Number, default: -122.3321 },
+      latitude: { type: Number, default: 28.6139 },
+      longitude: { type: Number, default: 77.2090 },
       speedKmh: { type: Number, default: 0 },
       headingDeg: { type: Number, default: 0 },
       lastUpdated: { type: Date, default: Date.now },
-      address: { type: String, default: "Seattle Central Terminal" },
+      address: { type: String, default: "Delhi Central Logistics Park, New Delhi" },
     },
     assignedDriver: {
       type: mongoose.Schema.Types.ObjectId,
@@ -52,7 +52,7 @@ const VehicleSchema = new mongoose.Schema(
     fuelLevelPercent: { type: Number, default: 85 },
     insuranceExpiry: { type: Date, required: true },
     permitExpiry: { type: Date, required: true },
-    depotName: { type: String, default: "Pacific Northwest Hub" },
+    depotName: { type: String, default: "Delhi NCR Regional Hub" },
   },
   { timestamps: true }
 );

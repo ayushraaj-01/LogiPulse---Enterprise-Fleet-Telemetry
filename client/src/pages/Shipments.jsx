@@ -23,24 +23,7 @@ import API from "../services/api";
 import { StatusBadge } from "../components/StatusBadge";
 import { RealMap } from "../components/RealMap";
 import { useAuth } from "../context/AuthContext";
-
-// Corridor builder for the modal
-const getShipmentCorridor = (s) => {
-  const oLat = s?.origin?.latitude || 47.5852;
-  const oLng = s?.origin?.longitude || -122.3582;
-  const dLat = s?.destination?.latitude || 47.6812;
-  const dLng = s?.destination?.longitude || -122.1245;
-
-  return [
-    [oLat, oLng],
-    [oLat + (dLat - oLat) * 0.2, oLng + (dLng - oLng) * 0.15],
-    [47.6150, -122.3300], // Downtown Seattle
-    [47.6400, -122.3080], // Montlake / WA-520
-    [47.6420, -122.2500], // Floating Bridge
-    [47.6550, -122.1650], // Bellevue / Redmond
-    [dLat, dLng],
-  ];
-};
+import { buildHighwayCorridor } from "../utils/geoCorridor";
 
 export const Shipments = () => {
   const { user } = useAuth();
@@ -309,45 +292,45 @@ export const Shipments = () => {
             <div className="flex-1 min-h-[380px] rounded-xl overflow-hidden border border-border shadow-inner relative">
               <RealMap
                 center={[
-                  ((trackingModalShipment.origin?.latitude || 47.5852) + (trackingModalShipment.destination?.latitude || 47.6812)) / 2,
-                  ((trackingModalShipment.origin?.longitude || -122.3582) + (trackingModalShipment.destination?.longitude || -122.1245)) / 2,
+                  ((trackingModalShipment.origin?.latitude || 28.5355) + (trackingModalShipment.destination?.latitude || 28.4952)) / 2,
+                  ((trackingModalShipment.origin?.longitude || 77.391) + (trackingModalShipment.destination?.longitude || 77.0892)) / 2,
                 ]}
-                zoom={11}
+                zoom={12}
                 showGeofences={true}
                 initialTile="streets"
                 interactiveControls={true}
                 height="100%"
                 originPin={{
-                  lat: trackingModalShipment.origin?.latitude || 47.5852,
-                  lng: trackingModalShipment.origin?.longitude || -122.3582,
+                  lat: trackingModalShipment.origin?.latitude || 28.5355,
+                  lng: trackingModalShipment.origin?.longitude || 77.391,
                   name: trackingModalShipment.origin?.name || "Origin Terminal",
                   address: trackingModalShipment.origin?.address,
                 }}
                 destinationPin={{
-                  lat: trackingModalShipment.destination?.latitude || 47.6812,
-                  lng: trackingModalShipment.destination?.longitude || -122.1245,
+                  lat: trackingModalShipment.destination?.latitude || 28.4952,
+                  lng: trackingModalShipment.destination?.longitude || 77.0892,
                   name: trackingModalShipment.destination?.name || "Destination Center",
                   address: trackingModalShipment.destination?.address,
                 }}
-                routePolyline={getShipmentCorridor(trackingModalShipment)}
+                routePolyline={buildHighwayCorridor(trackingModalShipment.origin, trackingModalShipment.destination)}
                 vehicles={
                   trackingModalShipment.assignedVehicle
                     ? [trackingModalShipment.assignedVehicle]
                     : [
                         {
                           _id: "modal-veh",
-                          licensePlate: "WA-FLT-104",
-                          make: "Freightliner",
-                          model: "Cascadia",
+                          licensePlate: "DL-01-AA-4091",
+                          make: "Tata Motors",
+                          model: "Signa 4825.T",
                           type: "HEAVY_TRUCK",
                           status: trackingModalShipment.status,
                           currentLocation: {
-                            latitude: 47.642,
-                            longitude: -122.25,
-                            speedKmh: 64,
+                            latitude: trackingModalShipment.origin?.latitude || 28.5355,
+                            longitude: trackingModalShipment.origin?.longitude || 77.391,
+                            speedKmh: 58,
                             headingDeg: 78,
                           },
-                          assignedDriver: trackingModalShipment.assignedDriver,
+                          assignedDriver: trackingModalShipment.assignedDriver || { name: "Rajesh Kumar", phone: "+91 98112-40912" },
                         },
                       ]
                 }

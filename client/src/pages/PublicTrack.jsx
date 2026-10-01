@@ -18,40 +18,24 @@ import {
   Thermometer,
   Radio,
   Search,
+  KeyRound,
+  Users,
 } from "lucide-react";
 import API from "../services/api";
 import { RealMap } from "../components/RealMap";
 import { LogiPulseLogo } from "../components/LogiPulseLogo";
 import { useLanguage } from "../context/LanguageContext";
+import { buildHighwayCorridor } from "../utils/geoCorridor";
+import io from "socket.io-client";
 
-// Predefined sample tracking IDs for quick access
+// Predefined sample tracking IDs from Kaggle DataCo Supply Chain Dataset
 const SAMPLE_ORDERS = [
-  { id: "TRK-2026-98124", label: "Seattle Harbor → Redmond (In-Transit)", status: "IN_TRANSIT" },
-  { id: "TRK-2026-98119", label: "Bellevue → Kirkland (At-Pickup)", status: "AT_PICKUP" },
-  { id: "TRK-2026-98075", label: "Tacoma Port → Seattle Market (Delivered)", status: "DELIVERED" },
-  { id: "TRK-2026-98150", label: "Everett Boeing → SeaTac Cargo (Booked)", status: "UNASSIGNED" },
+  { id: "TRK-2026-98124", label: "Noida SEZ → Gurugram (Semiconductors)", status: "IN_TRANSIT" },
+  { id: "TRK-2026-98119", label: "IGI Airport → AIIMS (Cold Chain Kits)", status: "AT_PICKUP" },
+  { id: "TRK-2026-98075", label: "JNPT Mumbai → Chakan Pune (Machinery)", status: "DELIVERED" },
+  { id: "TRK-2026-98150", label: "Whitefield → Sriperumbudur (Servers)", status: "UNASSIGNED" },
+  { id: "TRK-2026-10492", label: "Sanand → Sitapura Jaipur (Solar Inverters)", status: "IN_TRANSIT" },
 ];
-
-// Helper to generate realistic highway corridor waypoints between origin & destination
-const buildHighwayCorridor = (origin, destination) => {
-  const oLat = origin?.latitude || 47.5852;
-  const oLng = origin?.longitude || -122.3582;
-  const dLat = destination?.latitude || 47.6812;
-  const dLng = destination?.longitude || -122.1245;
-
-  // Intermediates along Seattle I-5 & WA-520 Bridge corridor
-  return [
-    [oLat, oLng],
-    [oLat + (dLat - oLat) * 0.15, oLng + (dLng - oLng) * 0.1],
-    [47.5980, -122.3320], // I-5 South Seattle Interchange
-    [47.6150, -122.3300], // Downtown Seattle I-5 Tunnel
-    [47.6400, -122.3080], // Montlake & WA-520 Interchange
-    [47.6420, -122.2500], // Evergreen Point Floating Bridge (Lake Washington)
-    [47.6430, -122.1900], // Hunts Point / Bellevue Overpass
-    [47.6650, -122.1450], // Redmond Way Freeway Exit
-    [dLat, dLng],
-  ];
-};
 
 export const PublicTrack = () => {
   const { trackingNumber } = useParams();
@@ -78,21 +62,55 @@ export const PublicTrack = () => {
         const routePoints = buildHighwayCorridor(data.origin, data.destination);
         setCorridor(routePoints);
 
-        // Initialize moving vehicle position
-        const defaultVehicle = data.assignedVehicle || {
-          _id: "trk-veh-live",
-          licensePlate: "WA-FLT-104",
-          make: "Freightliner",
-          model: "Cascadia Evolution",
-          type: "HEAVY_TRUCK",
+        // Initialize vehicle position based on status
+        const originLat = Number(data.origin?.latitude) || 28.5355;
+        const originLng = Number(data.origin?.longitude) || 77.391;
+        const destLat = Number(data.destination?.latitude) || 28.4952;
+        const destLng = Number(data.destination?.longitude) || 77.0892;
+
+        let initialLat = routePoints.length > 5 ? routePoints[5][0] : originLat;
+        let initialLng = routePoints.length > 5 ? routePoints[5][1] : originLng;
+        let initialSpeed = 58;
+        let initialHeading = 75;
+        let initialAddress = `${data.origin?.name || "Origin"} → ${data.destination?.name || "Destination"} Freight Corridor`;
+
+        if (data.status === "DELIVERED") {
+          initialLat = destLat;
+          initialLng = destLng;
+          initialSpeed = 0;
+          initialHeading = 0;
+          initialAddress = `${data.destination?.name || "Destination Hub"}, ${data.destination?.address || ""}`;
+        } else if (data.status === "AT_PICKUP" || data.status === "UNASSIGNED") {
+          initialLat = originLat;
+          initialLng = originLng;
+          initialSpeed = 0;
+          initialHeading = 0;
+          initialAddress = `${data.origin?.name || "Origin Terminal"}, ${data.origin?.address || ""}`;
+        } else if (data.assignedVehicle?.currentLocation?.latitude) {
+          initialLat = data.assignedVehicle.currentLocation.latitude;
+          initialLng = data.assignedVehicle.currentLocation.longitude;
+          initialSpeed = data.assignedVehicle.currentLocation.speedKmh || 58;
+          initialHeading = data.assignedVehicle.currentLocation.headingDeg || 75;
+          if (data.assignedVehicle.currentLocation.address) {
+            initialAddress = data.assignedVehicle.currentLocation.address;
+          }
+        }
+
+        const defaultVehicle = {
+          _id: data.assignedVehicle?._id || "trk-veh-live",
+          licensePlate: data.assignedVehicle?.licensePlate || "DL-01-AA-4091",
+          make: data.assignedVehicle?.make || "Tata Motors",
+          model: data.assignedVehicle?.model || "Signa 4825.T Heavy Multi-Axle",
+          type: data.assignedVehicle?.type || "HEAVY_TRUCK",
           status: data.status,
           currentLocation: {
-            latitude: routePoints[4][0],
-            longitude: routePoints[4][1],
-            speedKmh: 64,
-            headingDeg: 78,
+            latitude: initialLat,
+            longitude: initialLng,
+            speedKmh: initialSpeed,
+            headingDeg: initialHeading,
+            address: initialAddress,
           },
-          assignedDriver: data.assignedDriver || { name: "Marcus Ray", phone: "+1 (555) 100-2003" },
+          assignedDriver: data.assignedDriver || { name: "Rajesh Kumar", phone: "+91 98112-40912" },
         };
         setLiveVehicle(defaultVehicle);
       } catch (err) {
@@ -107,19 +125,51 @@ export const PublicTrack = () => {
     }
   }, [trackingNumber]);
 
-  // Gentle live vehicle GPS movement animation along the corridor
+  // Gentle live vehicle GPS movement animation along the corridor with live WebSocket sync
   useEffect(() => {
     if (!corridor || corridor.length < 2 || !liveVehicle) return;
+    if (shipment?.status === "DELIVERED" || shipment?.status === "NOT_DELIVERED" || shipment?.status === "UNASSIGNED") return;
 
-    let stepIndex = 4;
+    // Connect to WebSocket server for live telemetry updates
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5050";
+    let socket;
+    try {
+      socket = io(socketUrl);
+      socket.on("FLEET_TELEMETRY_UPDATE", (updatedVehicles) => {
+        if (shipment?.assignedVehicle?._id) {
+          const match = updatedVehicles.find((v) => v._id === shipment.assignedVehicle._id);
+          if (match && match.currentLocation?.latitude) {
+            setLiveVehicle((prev) => ({
+              ...prev,
+              ...match,
+              currentLocation: {
+                ...match.currentLocation,
+                address: match.currentLocation.address || prev?.currentLocation?.address,
+              },
+            }));
+          }
+        }
+      });
+    } catch (e) {}
+
+    let stepIndex = Math.min(4, Math.floor(corridor.length / 2));
+    let forward = true;
     const interval = setInterval(() => {
-      stepIndex = (stepIndex + 1) % corridor.length;
-      const pt = corridor[stepIndex];
-      const nextPt = corridor[(stepIndex + 1) % corridor.length];
+      if (forward) {
+        stepIndex++;
+        if (stepIndex >= corridor.length - 1) forward = false;
+      } else {
+        stepIndex--;
+        if (stepIndex <= 1) forward = true;
+      }
 
-      // Calculate approximate heading angle
-      const dLng = nextPt[1] - pt[1];
-      const dLat = nextPt[0] - pt[0];
+      const pt = corridor[stepIndex];
+      const targetPt = forward
+        ? corridor[Math.min(stepIndex + 1, corridor.length - 1)]
+        : corridor[Math.max(stepIndex - 1, 0)];
+
+      const dLng = targetPt[1] - pt[1];
+      const dLat = targetPt[0] - pt[0];
       const heading = Math.round((Math.atan2(dLng, dLat) * 180) / Math.PI + 360) % 360;
 
       setLiveVehicle((prev) => ({
@@ -129,13 +179,16 @@ export const PublicTrack = () => {
           longitude: pt[1],
           speedKmh: Math.floor(54 + Math.random() * 16),
           headingDeg: heading,
-          address: "WA-520 Corridor Eastbound",
+          address: prev?.currentLocation?.address || "Active Highway Transit Corridor",
         },
       }));
-    }, 4500);
+    }, 3800);
 
-    return () => clearInterval(interval);
-  }, [corridor]);
+    return () => {
+      clearInterval(interval);
+      if (socket) socket.disconnect();
+    };
+  }, [corridor, shipment]);
 
   if (loading) {
     return (
@@ -358,24 +411,24 @@ export const PublicTrack = () => {
             <div className="rounded-xl border border-border overflow-hidden shadow-2xl relative h-[420px]">
               <RealMap
                 center={[
-                  ((shipment.origin?.latitude || 47.5852) + (shipment.destination?.latitude || 47.6812)) / 2,
-                  ((shipment.origin?.longitude || -122.3582) + (shipment.destination?.longitude || -122.1245)) / 2,
+                  ((shipment.origin?.latitude || 28.5355) + (shipment.destination?.latitude || 28.4952)) / 2,
+                  ((shipment.origin?.longitude || 77.391) + (shipment.destination?.longitude || 77.0892)) / 2,
                 ]}
-                zoom={11}
+                zoom={12}
                 showGeofences={true}
                 initialTile="streets"
                 interactiveControls={true}
                 height="100%"
                 originPin={{
-                  lat: shipment.origin?.latitude || 47.5852,
-                  lng: shipment.origin?.longitude || -122.3582,
-                  name: shipment.origin?.name || "Seattle Harbor Terminal",
+                  lat: shipment.origin?.latitude || 28.5355,
+                  lng: shipment.origin?.longitude || 77.391,
+                  name: shipment.origin?.name || "Origin Terminal",
                   address: shipment.origin?.address,
                 }}
                 destinationPin={{
-                  lat: shipment.destination?.latitude || 47.6812,
-                  lng: shipment.destination?.longitude || -122.1245,
-                  name: shipment.destination?.name || "Redmond Logistics Center",
+                  lat: shipment.destination?.latitude || 28.4952,
+                  lng: shipment.destination?.longitude || 77.0892,
+                  name: shipment.destination?.name || "Destination Center",
                   address: shipment.destination?.address,
                 }}
                 routePolyline={corridor}
@@ -515,7 +568,7 @@ export const PublicTrack = () => {
             <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
               <span>
-                Thank you! Your verified rating of {rating} stars has been recorded to driver {shipment.assignedDriver?.name || "Marcus Ray"}'s safety scorecard.
+                Thank you! Your verified rating of {rating} stars has been recorded to driver {shipment.assignedDriver?.name || "Rajesh Kumar"}'s safety scorecard.
               </span>
             </div>
           )}

@@ -39,6 +39,7 @@ app.use("/api/billing", require("./routes/billing"));
 app.use("/api/analytics", require("./routes/analytics"));
 app.use("/api/audit-logs", require("./routes/auditLogs"));
 app.use("/api/chatbot", require("./routes/chatbot"));
+app.use("/api/dataset", require("./routes/dataset"));
 
 // System Health Check
 app.get("/api/health", (req, res) => {

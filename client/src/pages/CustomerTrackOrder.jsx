@@ -28,26 +28,8 @@ import API from "../services/api";
 import { StatusBadge } from "../components/StatusBadge";
 import { RealMap } from "../components/RealMap";
 import { useLanguage } from "../context/LanguageContext";
-
-// Highway corridor builder for tracking
-const buildHighwayCorridor = (origin, destination) => {
-  const oLat = origin?.latitude || 47.5852;
-  const oLng = origin?.longitude || -122.3582;
-  const dLat = destination?.latitude || 47.6812;
-  const dLng = destination?.longitude || -122.1245;
-
-  return [
-    [oLat, oLng],
-    [oLat + (dLat - oLat) * 0.15, oLng + (dLng - oLng) * 0.1],
-    [47.598, -122.332],
-    [47.615, -122.33],
-    [47.64, -122.308],
-    [47.642, -122.25],
-    [47.643, -122.19],
-    [47.665, -122.145],
-    [dLat, dLng],
-  ];
-};
+import { buildHighwayCorridor } from "../utils/geoCorridor";
+import io from "socket.io-client";
 
 export const CustomerTrackOrder = () => {
   const { t } = useLanguage();
@@ -94,31 +76,113 @@ export const CustomerTrackOrder = () => {
     if (!selectedShipment) return;
 
     const corridor = buildHighwayCorridor(selectedShipment.origin, selectedShipment.destination);
-    const initialVeh = selectedShipment.assignedVehicle || {
-      _id: "cust-veh",
-      licensePlate: "WA-FLT-104",
-      make: "Freightliner",
-      model: "Cascadia",
-      type: "HEAVY_TRUCK",
+    const originLat = Number(selectedShipment.origin?.latitude) || 28.5355;
+    const originLng = Number(selectedShipment.origin?.longitude) || 77.391;
+    const destLat = Number(selectedShipment.destination?.latitude) || 28.4952;
+    const destLng = Number(selectedShipment.destination?.longitude) || 77.0892;
+
+    const assignedVeh = selectedShipment.assignedVehicle;
+    const assignedDrv = selectedShipment.assignedDriver;
+
+    // Determine initial location based on status
+    let initialLat = corridor.length > 5 ? corridor[5][0] : originLat;
+    let initialLng = corridor.length > 5 ? corridor[5][1] : originLng;
+    let initialSpeed = 58;
+    let initialHeading = 75;
+    let initialAddress = `${selectedShipment.origin?.name || "Origin"} → ${selectedShipment.destination?.name || "Destination"} Freight Corridor`;
+
+    if (selectedShipment.status === "DELIVERED") {
+      initialLat = destLat;
+      initialLng = destLng;
+      initialSpeed = 0;
+      initialHeading = 0;
+      initialAddress = `${selectedShipment.destination?.name || "Destination Hub"}, ${selectedShipment.destination?.address || ""}`;
+    } else if (selectedShipment.status === "AT_PICKUP" || selectedShipment.status === "UNASSIGNED") {
+      initialLat = originLat;
+      initialLng = originLng;
+      initialSpeed = 0;
+      initialHeading = 0;
+      initialAddress = `${selectedShipment.origin?.name || "Origin Terminal"}, ${selectedShipment.origin?.address || ""}`;
+    } else if (assignedVeh?.currentLocation?.latitude && assignedVeh?.currentLocation?.longitude) {
+      initialLat = assignedVeh.currentLocation.latitude;
+      initialLng = assignedVeh.currentLocation.longitude;
+      initialSpeed = assignedVeh.currentLocation.speedKmh || 58;
+      initialHeading = assignedVeh.currentLocation.headingDeg || 75;
+      if (assignedVeh.currentLocation.address) {
+        initialAddress = assignedVeh.currentLocation.address;
+      }
+    }
+
+    const defaultVehicle = {
+      _id: assignedVeh?._id || "cust-veh",
+      licensePlate: assignedVeh?.licensePlate || "DL-01-AA-4091",
+      make: assignedVeh?.make || "Tata Motors",
+      model: assignedVeh?.model || "Signa 4825.T Heavy Multi-Axle",
+      type: assignedVeh?.type || "HEAVY_TRUCK",
       status: selectedShipment.status,
       currentLocation: {
-        latitude: corridor[4][0],
-        longitude: corridor[4][1],
-        speedKmh: 62,
-        headingDeg: 78,
+        latitude: initialLat,
+        longitude: initialLng,
+        speedKmh: initialSpeed,
+        headingDeg: initialHeading,
+        address: initialAddress,
       },
-      assignedDriver: selectedShipment.assignedDriver || { name: "Marcus Ray", phone: "+1 (555) 100-2003" },
+      assignedDriver: assignedDrv || { name: "Rajesh Kumar", phone: "+91 98112-40912" },
     };
-    setLiveVehicle(initialVeh);
+    setLiveVehicle(defaultVehicle);
 
-    // Gently glide vehicle along corridor
-    let stepIndex = 4;
+    if (
+      selectedShipment.status === "DELIVERED" ||
+      selectedShipment.status === "NOT_DELIVERED" ||
+      selectedShipment.status === "UNASSIGNED"
+    ) {
+      return;
+    }
+
+    // Connect to WebSocket server for live telemetry updates
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5050";
+    let socket;
+    try {
+      socket = io(socketUrl);
+      socket.on("FLEET_TELEMETRY_UPDATE", (updatedVehicles) => {
+        if (assignedVeh?._id) {
+          const match = updatedVehicles.find((v) => v._id === assignedVeh._id);
+          if (match && match.currentLocation?.latitude) {
+            setLiveVehicle((prev) => ({
+              ...prev,
+              ...match,
+              currentLocation: {
+                ...match.currentLocation,
+                address: match.currentLocation.address || initialAddress,
+              },
+            }));
+          }
+        }
+      });
+    } catch (e) {
+      console.warn("Socket connection fallback to corridor progression", e);
+    }
+
+    // Gentle progressive movement along the corridor
+    let stepIndex = Math.min(5, Math.floor(corridor.length / 2));
+    let forward = true;
     const interval = setInterval(() => {
-      stepIndex = (stepIndex + 1) % corridor.length;
+      if (!corridor || corridor.length < 2) return;
+      if (forward) {
+        stepIndex++;
+        if (stepIndex >= corridor.length - 1) forward = false;
+      } else {
+        stepIndex--;
+        if (stepIndex <= 1) forward = true;
+      }
+
       const pt = corridor[stepIndex];
-      const nextPt = corridor[(stepIndex + 1) % corridor.length];
-      const dLng = nextPt[1] - pt[1];
-      const dLat = nextPt[0] - pt[0];
+      const targetPt = forward
+        ? corridor[Math.min(stepIndex + 1, corridor.length - 1)]
+        : corridor[Math.max(stepIndex - 1, 0)];
+
+      const dLng = targetPt[1] - pt[1];
+      const dLat = targetPt[0] - pt[0];
       const heading = Math.round((Math.atan2(dLng, dLat) * 180) / Math.PI + 360) % 360;
 
       setLiveVehicle((prev) => ({
@@ -128,12 +192,15 @@ export const CustomerTrackOrder = () => {
           longitude: pt[1],
           speedKmh: Math.floor(52 + Math.random() * 18),
           headingDeg: heading,
-          address: "WA-520 Freight Corridor Eastbound",
+          address: initialAddress,
         },
       }));
-    }, 4000);
+    }, 3500);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (socket) socket.disconnect();
+    };
   }, [selectedShipment]);
 
   const handleSearchSubmit = (e) => {
@@ -356,27 +423,27 @@ export const CustomerTrackOrder = () => {
               <div className="h-80 sm:h-96 rounded-xl overflow-hidden border border-border shadow-inner relative">
                 <RealMap
                   center={[
-                    ((selectedShipment.origin?.latitude || 47.5852) +
-                      (selectedShipment.destination?.latitude || 47.6812)) /
+                    ((selectedShipment.origin?.latitude || 28.5355) +
+                      (selectedShipment.destination?.latitude || 28.4952)) /
                       2,
-                    ((selectedShipment.origin?.longitude || -122.3582) +
-                      (selectedShipment.destination?.longitude || -122.1245)) /
+                    ((selectedShipment.origin?.longitude || 77.391) +
+                      (selectedShipment.destination?.longitude || 77.0892)) /
                       2,
                   ]}
-                  zoom={11}
-                  showGeofences={false}
+                  zoom={12}
+                  showGeofences={true}
                   initialTile="streets"
                   interactiveControls={true}
                   height="100%"
                   originPin={{
-                    lat: selectedShipment.origin?.latitude || 47.5852,
-                    lng: selectedShipment.origin?.longitude || -122.3582,
+                    lat: selectedShipment.origin?.latitude || 28.5355,
+                    lng: selectedShipment.origin?.longitude || 77.391,
                     name: selectedShipment.origin?.name || "Origin Terminal",
                     address: selectedShipment.origin?.address,
                   }}
                   destinationPin={{
-                    lat: selectedShipment.destination?.latitude || 47.6812,
-                    lng: selectedShipment.destination?.longitude || -122.1245,
+                    lat: selectedShipment.destination?.latitude || 28.4952,
+                    lng: selectedShipment.destination?.longitude || 77.0892,
                     name: selectedShipment.destination?.name || "Delivery Address",
                     address: selectedShipment.destination?.address,
                   }}
@@ -446,24 +513,24 @@ export const CustomerTrackOrder = () => {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="font-heading font-bold text-sm text-foreground truncate">
-                    {selectedShipment.assignedDriver?.name || "Marcus Ray"}
+                    {selectedShipment.assignedDriver?.name || "Rajesh Kumar"}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
                     Carrier Partner &bull; <span className="text-amber-400 font-bold">★ 4.92 Rating</span>
                   </div>
                   <div className="text-[11px] font-mono text-primary font-semibold mt-0.5">
-                    {selectedShipment.assignedVehicle?.licensePlate || "WA-FLT-104"} ({selectedShipment.assignedVehicle?.make || "Freightliner"})
+                    {selectedShipment.assignedVehicle?.licensePlate || "DL-01-AA-4091"} ({selectedShipment.assignedVehicle?.make || "Tata Motors"})
                   </div>
                 </div>
               </div>
 
               {/* Call Driver Action */}
               <a
-                href={`tel:${selectedShipment.assignedDriver?.phone || "+15551002003"}`}
+                href={`tel:${selectedShipment.assignedDriver?.phone || "+919811240912"}`}
                 className="btn-devfest w-full h-11 text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer"
               >
                 <Phone className="h-4 w-4 stroke-[2.5]" />
-                <span>{t("callDriver")}: {selectedShipment.assignedDriver?.phone || "+1 (555) 100-2003"}</span>
+                <span>{t("callDriver")}: {selectedShipment.assignedDriver?.phone || "+91 98112-40912"}</span>
               </a>
 
               {/* Helper Badge */}

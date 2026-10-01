@@ -13,7 +13,6 @@ import { getDefaultPathForRole } from "./utils/rolePermissions";
 // Pages
 import { Login } from "./pages/Login";
 import { Overview } from "./pages/Overview";
-import { LiveMap } from "./pages/LiveMap";
 import { Shipments } from "./pages/Shipments";
 import { DispatchBoard } from "./pages/DispatchBoard";
 import { Fleet } from "./pages/Fleet";
@@ -97,11 +96,7 @@ export default function App() {
             />
             <Route
               path="/map"
-              element={
-                <AppLayout>
-                  <LiveMap />
-                </AppLayout>
-              }
+              element={<Navigate to="/overview" replace />}
             />
             <Route
               path="/shipments"

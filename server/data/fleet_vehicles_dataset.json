@@ -1,0 +1,212 @@
+[
+  {
+    "vin": "MAT628491N1029481",
+    "licensePlate": "DL-01-AA-4091",
+    "make": "Tata Motors",
+    "model": "Signa 4825.T Heavy Multi-Axle",
+    "year": 2024,
+    "type": "HEAVY_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 28500,
+    "currentOdometerKm": 48250,
+    "status": "IN_TRANSIT",
+    "currentLocation": {
+      "latitude": 28.5355,
+      "longitude": 77.391,
+      "speedKmh": 58,
+      "headingDeg": 120,
+      "address": "Noida-Greater Noida Expressway Km 14"
+    },
+    "fuelLevelPercent": 78,
+    "depotName": "Delhi NCR Inland Container Depot (ICD Okhla)"
+  },
+  {
+    "vin": "MBL428190K9481023",
+    "licensePlate": "DL-01-EV-8812",
+    "make": "Tata Motors",
+    "model": "Ace Gold EV Mini Delivery",
+    "year": 2024,
+    "type": "BOX_TRUCK",
+    "fuelType": "ELECTRIC",
+    "payloadCapacityKg": 1200,
+    "currentOdometerKm": 14200,
+    "status": "ACTIVE",
+    "currentLocation": {
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "speedKmh": 32,
+      "headingDeg": 270,
+      "address": "Connaught Place Central Courier Hub, New Delhi"
+    },
+    "fuelLevelPercent": 89,
+    "depotName": "Central Delhi Express Depot"
+  },
+  {
+    "vin": "MB1209384HB920194",
+    "licensePlate": "MH-04-AZ-2819",
+    "make": "BharatBenz",
+    "model": "3528C Heavy Haulage Carrier",
+    "year": 2023,
+    "type": "HEAVY_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 26000,
+    "currentOdometerKm": 68400,
+    "status": "IN_TRANSIT",
+    "currentLocation": {
+      "latitude": 18.949,
+      "longitude": 72.951,
+      "speedKmh": 62,
+      "headingDeg": 95,
+      "address": "JNPT Port Expressway, Navi Mumbai"
+    },
+    "fuelLevelPercent": 82,
+    "depotName": "Mumbai JNPT Port Logistics Hub"
+  },
+  {
+    "vin": "KA032891823901920",
+    "licensePlate": "KA-03-MG-7812",
+    "make": "Ashok Leyland",
+    "model": "Ecomet 1615 HE Box Freight",
+    "year": 2023,
+    "type": "BOX_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 11500,
+    "currentOdometerKm": 54200,
+    "status": "ACTIVE",
+    "currentLocation": {
+      "latitude": 12.9698,
+      "longitude": 77.7499,
+      "speedKmh": 42,
+      "headingDeg": 180,
+      "address": "Whitefield Export Promotion Industrial Park, Bengaluru"
+    },
+    "fuelLevelPercent": 71,
+    "depotName": "Bengaluru Whitefield Inland Depot"
+  },
+  {
+    "vin": "HR261029481920391",
+    "licensePlate": "HR-26-DK-9041",
+    "make": "Mahindra",
+    "model": "Bolero Maxi Truck Plus",
+    "year": 2024,
+    "type": "CARGO_VAN",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 2500,
+    "currentOdometerKm": 29800,
+    "status": "IN_TRANSIT",
+    "currentLocation": {
+      "latitude": 28.4952,
+      "longitude": 77.0892,
+      "speedKmh": 45,
+      "headingDeg": 40,
+      "address": "Cyber City Logistics Terminal, Gurugram"
+    },
+    "fuelLevelPercent": 76,
+    "depotName": "Gurugram Cyber Hub Freight Center"
+  },
+  {
+    "vin": "UP162940192840192",
+    "licensePlate": "UP-16-BT-5012",
+    "make": "Eicher",
+    "model": "Pro 3019 Intercity Cargo",
+    "year": 2023,
+    "type": "HEAVY_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 19000,
+    "currentOdometerKm": 61400,
+    "status": "IDLE",
+    "currentLocation": {
+      "latitude": 28.5700,
+      "longitude": 77.3200,
+      "speedKmh": 0,
+      "headingDeg": 0,
+      "address": "Sector 18 Commercial Warehousing Yard, Noida"
+    },
+    "fuelLevelPercent": 94,
+    "depotName": "Noida Special Economic Zone Depot"
+  },
+  {
+    "vin": "GJ013920194810294",
+    "licensePlate": "GJ-01-AX-3304",
+    "make": "Tata Motors",
+    "model": "Ultra T.16 Cold-Chain Reefer",
+    "year": 2024,
+    "type": "BOX_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 10200,
+    "currentOdometerKm": 43500,
+    "status": "IN_TRANSIT",
+    "currentLocation": {
+      "latitude": 23.0225,
+      "longitude": 72.5714,
+      "speedKmh": 64,
+      "headingDeg": 45,
+      "address": "Sardar Patel Ring Road Logistics Corridor, Ahmedabad"
+    },
+    "fuelLevelPercent": 68,
+    "depotName": "Ahmedabad Sanand Freight Depot"
+  },
+  {
+    "vin": "TN091948102930491",
+    "licensePlate": "TN-09-CB-1284",
+    "make": "Ashok Leyland",
+    "model": "Boss 1920 Express Freighter",
+    "year": 2023,
+    "type": "HEAVY_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 18500,
+    "currentOdometerKm": 72800,
+    "status": "ACTIVE",
+    "currentLocation": {
+      "latitude": 13.0827,
+      "longitude": 80.2707,
+      "speedKmh": 38,
+      "headingDeg": 210,
+      "address": "Chennai Port Trust Container Exit Gate"
+    },
+    "fuelLevelPercent": 84,
+    "depotName": "Chennai Port Logistics Hub"
+  },
+  {
+    "vin": "TS094910294810293",
+    "licensePlate": "TS-09-UB-4401",
+    "make": "Eicher",
+    "model": "Pro 2049 EV Clean Delivery",
+    "year": 2025,
+    "type": "BOX_TRUCK",
+    "fuelType": "ELECTRIC",
+    "payloadCapacityKg": 2400,
+    "currentOdometerKm": 9800,
+    "status": "IN_TRANSIT",
+    "currentLocation": {
+      "latitude": 17.3850,
+      "longitude": 78.4867,
+      "speedKmh": 41,
+      "headingDeg": 315,
+      "address": "HITEC City Telecom Delivery Route, Hyderabad"
+    },
+    "fuelLevelPercent": 81,
+    "depotName": "Hyderabad Shamshabad Cargo Center"
+  },
+  {
+    "vin": "RJ149102948192039",
+    "licensePlate": "RJ-14-GH-6621",
+    "make": "Mahindra",
+    "model": "Blazo X 42 Heavy Container Multi-Axle",
+    "year": 2024,
+    "type": "HEAVY_TRUCK",
+    "fuelType": "DIESEL",
+    "payloadCapacityKg": 31000,
+    "currentOdometerKm": 88400,
+    "status": "IN_TRANSIT",
+    "currentLocation": {
+      "latitude": 26.9124,
+      "longitude": 75.7873,
+      "speedKmh": 66,
+      "headingDeg": 30,
+      "address": "NH 48 Golden Quadrilateral Highway Corridor, Jaipur"
+    },
+    "fuelLevelPercent": 65,
+    "depotName": "Jaipur Sitapura Industrial Logistics Terminal"
+  }
+]

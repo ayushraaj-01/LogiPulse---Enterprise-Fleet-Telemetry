@@ -117,7 +117,7 @@ export const RealMap = ({
   vehicles = [],
   selectedVehicle = null,
   onSelectVehicle = () => {},
-  center = [47.6101, -122.3328],
+  center = null,
   zoom = 12,
   showGeofences = true,
   routePolyline = null,
@@ -135,6 +135,20 @@ export const RealMap = ({
   const polylineRef = useRef(null);
   const originMarkerRef = useRef(null);
   const destMarkerRef = useRef(null);
+  const hasAutoFitRef = useRef(false);
+
+  const effectiveCenter = React.useMemo(() => {
+    if (center && Array.isArray(center) && center.length === 2 && center[0] && center[1]) {
+      return center;
+    }
+    if (originPin?.lat && destinationPin?.lat) {
+      return [(originPin.lat + destinationPin.lat) / 2, (originPin.lng + destinationPin.lng) / 2];
+    }
+    if (vehicles && vehicles.length > 0 && vehicles[0]?.currentLocation?.latitude) {
+      return [vehicles[0].currentLocation.latitude, vehicles[0].currentLocation.longitude];
+    }
+    return [28.6139, 77.2090];
+  }, [center, originPin, destinationPin, vehicles]);
 
   const [activeTileType, setActiveTileType] = useState(() => {
     if (initialTile && TILE_LAYERS[initialTile]) return initialTile;
@@ -196,7 +210,7 @@ export const RealMap = ({
     let map;
     try {
       map = L.map(container, {
-        center,
+        center: effectiveCenter,
         zoom,
         zoomControl: false,
         attributionControl: true,
@@ -206,7 +220,7 @@ export const RealMap = ({
       delete container._leaflet_id;
       try {
         map = L.map(container, {
-          center,
+          center: effectiveCenter,
           zoom,
           zoomControl: false,
           attributionControl: true,
@@ -266,7 +280,7 @@ export const RealMap = ({
     };
   }, []);
 
-  // Update or render Geofences
+  // Update or render Dynamic Geofences based on active corridor / depots
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map || !mapReady) return;
@@ -278,56 +292,71 @@ export const RealMap = ({
 
     if (!showGeofences) return;
 
-    // Seattle Harbor Terminal Depot
-    const harbor = L.circle([47.5852, -122.3582], {
-      color: "#10b981",
-      fillColor: "#10b981",
-      fillOpacity: 0.16,
-      radius: 1100,
-      dashArray: "6, 8",
-      weight: 2,
-    }).addTo(map);
-    harbor.bindPopup(`
-      <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
-        <b style="color:#059669; font-size:13px;">Seattle Harbor Depot #18</b><br/>
-        <span>Authorized Gateway • Terminal Gate 4</span>
-      </div>
-    `);
+    // 1. If Origin & Destination Pins are active (corridor view)
+    if (originPin?.lat && destinationPin?.lat) {
+      const originFence = L.circle([originPin.lat, originPin.lng], {
+        color: "#10b981",
+        fillColor: "#10b981",
+        fillOpacity: 0.16,
+        radius: 750,
+        dashArray: "6, 8",
+        weight: 2,
+      }).addTo(map);
+      originFence.bindPopup(`
+        <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
+          <b style="color:#059669; font-size:13px;">${originPin.name || "Origin Terminal"}</b><br/>
+          <span>${originPin.address || "Authorized Gateway Facility"}</span>
+        </div>
+      `);
 
-    // Redmond Advanced Logistics Center
-    const redmond = L.circle([47.6812, -122.1245], {
-      color: "#2563eb",
-      fillColor: "#2563eb",
-      fillOpacity: 0.16,
-      radius: 1300,
-      dashArray: "6, 8",
-      weight: 2,
-    }).addTo(map);
-    redmond.bindPopup(`
-      <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
-        <b style="color:#2563eb; font-size:13px;">Redmond Logistics Hub</b><br/>
-        <span>Primary Destination Terminal & Dock</span>
-      </div>
-    `);
+      const destFence = L.circle([destinationPin.lat, destinationPin.lng], {
+        color: "#2563eb",
+        fillColor: "#2563eb",
+        fillOpacity: 0.16,
+        radius: 750,
+        dashArray: "6, 8",
+        weight: 2,
+      }).addTo(map);
+      destFence.bindPopup(`
+        <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
+          <b style="color:#2563eb; font-size:13px;">${destinationPin.name || "Destination Hub"}</b><br/>
+          <span>${destinationPin.address || "Designated Dropoff Dock"}</span>
+        </div>
+      `);
 
-    // Tacoma Marine Terminal
-    const tacoma = L.circle([47.2562, -122.4215], {
-      color: "#f59e0b",
-      fillColor: "#f59e0b",
-      fillOpacity: 0.14,
-      radius: 1600,
-      dashArray: "6, 8",
-      weight: 2,
-    }).addTo(map);
-    tacoma.bindPopup(`
-      <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
-        <b style="color:#d97706; font-size:13px;">Tacoma Cargo Port</b><br/>
-        <span>Intermodal Rail & Ocean Container Yard</span>
-      </div>
-    `);
+      geofencesRef.current = [originFence, destFence];
+      return;
+    }
 
-    geofencesRef.current = [harbor, redmond, tacoma];
-  }, [showGeofences, mapReady]);
+    // 2. If fleet vehicles are provided, render geofences around operating depots
+    const depotFences = [];
+    const seenDepots = new Set();
+    vehicles.forEach((v) => {
+      const depot = v.depotName || "Regional Hub";
+      const lat = v.currentLocation?.latitude;
+      const lng = v.currentLocation?.longitude;
+      if (lat && lng && !seenDepots.has(depot)) {
+        seenDepots.add(depot);
+        const fence = L.circle([lat, lng], {
+          color: "#3b82f6",
+          fillColor: "#3b82f6",
+          fillOpacity: 0.12,
+          radius: 1200,
+          dashArray: "6, 8",
+          weight: 2,
+        }).addTo(map);
+        fence.bindPopup(`
+          <div style="font-family:sans-serif; font-size:12px; line-height:1.4;">
+            <b style="color:#2563eb; font-size:13px;">${depot}</b><br/>
+            <span>Active Fleet Operations Facility</span>
+          </div>
+        `);
+        depotFences.push(fence);
+      }
+    });
+
+    geofencesRef.current = depotFences;
+  }, [showGeofences, mapReady, originPin, destinationPin, vehicles]);
 
   // Update or render Vehicle Markers
   useEffect(() => {
@@ -387,7 +416,23 @@ export const RealMap = ({
         markersRef.current[v._id] = marker;
       }
     });
-  }, [vehicles, selectedVehicle, mapReady, onSelectVehicle]);
+
+    // Auto-fit bounds on initial fleet load so the map centers on where vehicles actually are
+    if (!routePolyline && vehicles.length > 0 && !hasAutoFitRef.current) {
+      const validPoints = vehicles
+        .filter((v) => v.currentLocation?.latitude && v.currentLocation?.longitude)
+        .map((v) => [v.currentLocation.latitude, v.currentLocation.longitude]);
+      if (validPoints.length === 1) {
+        map.setView(validPoints[0], Math.max(map.getZoom(), 12));
+        hasAutoFitRef.current = true;
+      } else if (validPoints.length > 1) {
+        try {
+          map.fitBounds(L.latLngBounds(validPoints), { padding: [50, 50], maxZoom: 13 });
+          hasAutoFitRef.current = true;
+        } catch (e) {}
+      }
+    }
+  }, [vehicles, selectedVehicle, mapReady, onSelectVehicle, routePolyline]);
 
   // Center on selected vehicle if clicked
   useEffect(() => {

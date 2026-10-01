@@ -1,6 +1,5 @@
 import {
   LayoutDashboard,
-  MapPin,
   Package,
   KanbanSquare,
   Truck,
@@ -22,8 +21,8 @@ import {
  *
  * ROLES:
  * 1. ADMIN: Complete unrestricted system access across all modules.
- * 2. DISPATCHER: Operational control (Overview, Map, Shipments, Dispatch Board, Fleet, Drivers, Routes, Maintenance).
- * 3. DRIVER: Driver workflow (Driver Portal, My Route, Live Map, Fuel Log, Vehicle Maintenance).
+ * 2. DISPATCHER: Operational control (Overview, Shipments, Dispatch Board, Fleet, Drivers, Routes, Maintenance).
+ * 3. DRIVER: Driver workflow (Driver Portal, My Route, Fuel Log, Vehicle Maintenance).
  * 4. CUSTOMER: Customer Portal (My Orders, Track My Consignment, Book Freight, Invoices, Support).
  *    * CUSTOMER CANNOT SEE LIVE LOCATIONS OF THE ENTIRE FLEET! ONLY TRACKS THEIR OWN ORDER *
  * 5. FINANCE: Accounting (Overview, Invoicing & Billing, Fuel & Expenses, Freight Analytics, Audit Logs).
@@ -37,7 +36,6 @@ export const ROLE_CONFIG = {
     description: "Complete system governance, audit trails, fleet settings, and user management.",
     allowedPaths: [
       "/overview",
-      "/map",
       "/shipments",
       "/dispatch-board",
       "/fleet",
@@ -61,7 +59,6 @@ export const ROLE_CONFIG = {
     description: "Real-time dispatching, Kanban assignments, route planning, fleet tracking, and driver management.",
     allowedPaths: [
       "/overview",
-      "/map",
       "/shipments",
       "/dispatch-board",
       "/fleet",
@@ -78,7 +75,6 @@ export const ROLE_CONFIG = {
     allowedPaths: [
       "/driver-portal",
       "/routes",
-      "/map",
       "/fuel-expenses",
       "/maintenance",
     ],
@@ -121,14 +117,6 @@ export const ALL_NAV_ITEMS = [
     path: "/overview",
     icon: LayoutDashboard,
     roles: ["ADMIN", "DISPATCHER", "FINANCE"],
-  },
-  {
-    id: "map",
-    title: "Live Fleet Map",
-    path: "/map",
-    icon: MapPin,
-    badge: "Real GPS",
-    roles: ["ADMIN", "DISPATCHER", "DRIVER"], // CUSTOMER EXCLUDED from seeing entire fleet
   },
 
   // Customer Specific Modules

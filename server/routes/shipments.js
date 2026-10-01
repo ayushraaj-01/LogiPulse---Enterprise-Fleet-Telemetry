@@ -51,7 +51,7 @@ router.get("/", protect, async (req, res) => {
     const shipments = await Shipment.find(query)
       .populate("customer", "name email phone company")
       .populate("assignedDriver", "name email phone avatar")
-      .populate("assignedVehicle", "make model licensePlate type status")
+      .populate("assignedVehicle", "make model licensePlate type status currentLocation")
       .sort({ createdAt: -1 });
 
     res.json({ success: true, count: shipments.length, data: shipments });

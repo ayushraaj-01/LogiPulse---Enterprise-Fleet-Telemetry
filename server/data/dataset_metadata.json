@@ -1,0 +1,31 @@
+{
+  "datasetName": "India National Logistics & Fleet Telemetry Dataset",
+  "source": "Kaggle (DataCo Smart Supply Chain & Indian Freight Corridors)",
+  "author": "LogiPulse Telemetry & DataCo Research",
+  "license": "CC BY-SA 4.0",
+  "version": "2.5.0",
+  "currency": "INR (₹)",
+  "description": "Commercial supply chain logistics and telematics dataset covering Indian industrial trade lanes, Golden Quadrilateral corridors, expressway telematics, and electronic proof of delivery in Indian Rupees (INR).",
+  "attributes": [
+    "Delivery_Status",
+    "Late_Delivery_Risk",
+    "Days_For_Shipping_Real",
+    "Days_For_Shipment_Scheduled",
+    "Shipping_Mode",
+    "Product_Category",
+    "Order_Profit_INR",
+    "Sales_Per_Order_INR",
+    "Origin_Terminal_Coordinates",
+    "Destination_Hub_Coordinates",
+    "Live_GPS_Telematics",
+    "EPOD_Security_OTP"
+  ],
+  "corridors": [
+    "Delhi NCR - Noida - Gurugram Expressway Corridor",
+    "NH 48 Golden Quadrilateral (Delhi - Jaipur - Ahmedabad - Mumbai)",
+    "Mumbai - Pune Expressway & JNPT Port Container Corridor",
+    "Bengaluru - Chennai Industrial Freight Corridor (NH 44 / NH 48)",
+    "Hyderabad - Bengaluru Tech & Pharma Highway"
+  ],
+  "lastSynced": "2026-10-01T10:05:00.000Z"
+}

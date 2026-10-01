@@ -12,7 +12,6 @@ import { getNavItemsForRole, ROLE_CONFIG } from "../utils/rolePermissions";
 
 const PATH_TITLE_MAP = {
   "/overview": "navOverview",
-  "/map": "navLiveMap",
   "/shipments": "navShipments",
   "/dispatch-board": "navDispatchBoard",
   "/fleet": "navFleet",

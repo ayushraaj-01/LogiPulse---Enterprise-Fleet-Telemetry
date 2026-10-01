@@ -112,8 +112,9 @@ export const LiveMap = () => {
     };
     fetchVehicles();
 
-    // Connect to WebSocket server on port 5050
-    const socket = io("http://localhost:5050");
+    // Connect to WebSocket server
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5050";
+    const socket = io(socketUrl);
 
     socket.on("connect", () => {
       setSocketConnected(true);
@@ -246,7 +247,7 @@ export const LiveMap = () => {
         <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none">
           <div className="px-3 py-1.5 rounded-lg border border-white/15 bg-black/80 backdrop-blur-md text-xs text-white font-mono flex items-center gap-2 shadow-xl">
             <Radio className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
-            <span>REAL-TIME SEATTLE GPS TELEMETRY &bull; LEAFLET ENGINE</span>
+            <span>REAL-TIME FLEET GPS TELEMETRY &bull; SATELLITE ENGINE</span>
           </div>
         </div>
 
@@ -256,7 +257,7 @@ export const LiveMap = () => {
             vehicles={filteredVehicles}
             selectedVehicle={selectedVehicle}
             onSelectVehicle={setSelectedVehicle}
-            center={[47.6101, -122.3328]}
+            center={null}
             zoom={12}
             showGeofences={true}
           />
