@@ -79,11 +79,10 @@ export const Navbar = ({ onToggleSidebar }) => {
                     setRoleDropdownOpen(false);
                     navigate(getDefaultPathForRole(r.role));
                   }}
-                  className={`w-full flex items-start gap-2.5 p-2 rounded-lg text-left text-xs transition-colors ${
-                    user?.role === r.role
-                      ? "bg-primary/15 text-primary font-semibold border border-primary/20"
-                      : "hover:bg-muted text-foreground"
-                  }`}
+                  className={`w-full flex items-start gap-2.5 p-2 rounded-lg text-left text-xs transition-colors ${user?.role === r.role
+                    ? "bg-primary/15 text-primary font-semibold border border-primary/20"
+                    : "hover:bg-muted text-foreground"
+                    }`}
                 >
                   <img src={r.avatar} alt={r.name} className="h-7 w-7 rounded-full object-cover shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
@@ -112,20 +111,18 @@ export const Navbar = ({ onToggleSidebar }) => {
           aria-label="Toggle Language"
         >
           <span
-            className={`px-2 py-1 rounded-full transition-all text-[11px] font-bold ${
-              language === "en"
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`px-2 py-1 rounded-full transition-all text-[11px] font-bold ${language === "en"
+              ? "bg-primary text-primary-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             EN
           </span>
           <span
-            className={`px-2 py-1 rounded-full transition-all text-[11px] font-bold ${
-              language === "hi"
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`px-2 py-1 rounded-full transition-all text-[11px] font-bold ${language === "hi"
+              ? "bg-primary text-primary-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             हिंदी
           </span>
@@ -138,21 +135,19 @@ export const Navbar = ({ onToggleSidebar }) => {
           aria-label="Toggle Light and Dark Mode"
         >
           <span
-            className={`flex items-center gap-1 px-2 py-1 rounded-full transition-all ${
-              theme === "light"
-                ? "bg-primary text-primary-foreground font-bold shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`flex items-center gap-1 px-2 py-1 rounded-full transition-all ${theme === "light"
+              ? "bg-primary text-primary-foreground font-bold shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             <Sun className="h-3.5 w-3.5" />
             <span className="text-[11px] hidden sm:inline">Light</span>
           </span>
           <span
-            className={`flex items-center gap-1 px-2 py-1 rounded-full transition-all ${
-              theme === "dark"
-                ? "bg-primary text-primary-foreground font-bold shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`flex items-center gap-1 px-2 py-1 rounded-full transition-all ${theme === "dark"
+              ? "bg-primary text-primary-foreground font-bold shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             <Moon className="h-3.5 w-3.5" />
             <span className="text-[11px] hidden sm:inline">Dark</span>
