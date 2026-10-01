@@ -7,6 +7,7 @@ const API_BASE_URL =
 // Remove trailing slash if present
 const API = axios.create({
   baseURL: `${API_BASE_URL}/api`,
+  timeout: 8000,
   headers: {
     "Content-Type": "application/json",
   },

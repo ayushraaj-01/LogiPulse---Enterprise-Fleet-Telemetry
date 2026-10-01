@@ -3,40 +3,82 @@ import API from "../services/api";
 
 const AuthContext = createContext();
 
+const DEFAULT_DEMO_ROLES = [
+  {
+    role: "ADMIN",
+    title: "Admin",
+    email: "admin@logipulse.com",
+    name: "Arthur Pendelton",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    badge: "Full Access",
+    description: "Complete system control, settings, and user management.",
+  },
+  {
+    role: "DISPATCHER",
+    title: "Dispatcher",
+    email: "dispatcher@logipulse.com",
+    name: "Alex Vance",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    badge: "Live Routes",
+    description: "Live map tracking, dispatch board, and driver route assignments.",
+  },
+  {
+    role: "DRIVER",
+    title: "Driver",
+    email: "driver@logipulse.com",
+    name: "Marcus Ray",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    badge: "Driver App",
+    description: "Mobile driver dashboard, delivery stops, and e-signature proof.",
+  },
+  {
+    role: "CUSTOMER",
+    title: "Customer",
+    email: "customer@logipulse.com",
+    name: "Elena Rostova",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+    badge: "Track & Book",
+    description: "Book new deliveries and track live shipment progress in real time.",
+  },
+  {
+    role: "FINANCE",
+    title: "Finance",
+    email: "finance@logipulse.com",
+    name: "Julian Sterling",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+    badge: "Invoices",
+    description: "Invoices, fuel & toll expense auditing, and billing settlements.",
+  },
+];
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("logipulse_user");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem("logipulse_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
   const [token, setToken] = useState(
     () => localStorage.getItem("logipulse_token") || null
   );
 
-  const [loading, setLoading] = useState(true);
-  const [demoRoles, setDemoRoles] = useState([]);
+  // Initialize loading as false so UI renders instantly without waiting for network
+  const [loading, setLoading] = useState(false);
+  const [demoRoles, setDemoRoles] = useState(DEFAULT_DEMO_ROLES);
 
-  // Fetch demo roles when the application loads
+  // Background sync for demo roles without blocking initial render
   useEffect(() => {
     const fetchDemoRoles = async () => {
       try {
         const res = await API.get("/auth/demo-users");
-
-        if (res.data.success) {
-          setDemoRoles(res.data.roles || []);
-        } else {
-          console.error("Demo roles API returned success:false");
-          setDemoRoles([]);
+        if (res.data.success && res.data.roles?.length > 0) {
+          setDemoRoles(res.data.roles);
         }
       } catch (err) {
-        console.error(
-          "Failed to load demo roles:",
-          err.response?.data || err.message
-        );
-
-        setDemoRoles([]);
-      } finally {
-        setLoading(false);
+        // Fallback to DEFAULT_DEMO_ROLES silently
       }
     };
 
